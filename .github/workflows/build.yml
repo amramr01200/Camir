@@ -24,18 +24,15 @@ jobs:
             echo "Unzipping project..."
             unzip -o zoompro-github.zip -d extracted_project
             cd extracted_project
-            # الانتقال للمجلد الداخلي إذا وجد
-            if [ -d "zoompro-github" ]; then cd zoompro-github; fi
-            # نقل الملفات للمجلد الرئيسي لتسهيل البناء
-            cp -r . ../../
-            cd ../../
+            cp -r . ../
+            cd ../
           else
-            echo "Zip file not found, continuing with repository files..."
+            echo "Zip file not found, continuing..."
           fi
 
       - name: Grant execute permission for gradlew
         run: |
-          chmod +x ./gradlew || chmod +x **/gradlew || echo "gradlew not found yet"
+          find . -name gradlew -exec chmod +x {} \; || echo "gradlew not found"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -45,12 +42,12 @@ jobs:
           if [ -f "./gradlew" ]; then
             ./gradlew assembleDebug
           else
-            find . -name gradlew -exec {} assembleDebug \;
+            find . -name gradlew -execdir ./gradlew assembleDebug \;
           fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: "**/*.apk"
           

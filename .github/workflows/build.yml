@@ -11,7 +11,10 @@ jobs:
       - name: Unpack project
         run: |
           unzip -q -o zoompro-github.zip -d src
-          ls -la src
+          echo "--- محتويات src ---"
+          find src -maxdepth 2 | head -30
+          P=$(dirname "$(find src -name settings.gradle.kts | head -1)")
+          echo "PROJECT_DIR=$P" >> "$GITHUB_ENV"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -22,12 +25,12 @@ jobs:
         with:
           gradle-version: '8.9'
       - name: Build debug APK
-        working-directory: src
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           gradle assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/*.apk ZoomPro.apk
       - uses: actions/upload-artifact@v4
         with:
           name: ZoomPro-apk
-          path: src/ZoomPro.apk
+          path: ${{ env.PROJECT_DIR }}/ZoomPro.apk
           if-no-files-found: error

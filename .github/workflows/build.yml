@@ -33,4 +33,7 @@ jobs:
         with:
           name: ZoomPro-apk
           path: ${{ env.PROJECT_DIR }}/ZoomPro.apk
-          if-no-files-found: error
+          if-no-files-found: error        - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.${{ github.run_number }}
+          files: ${{ env.PROJECT_DIR }}/ZoomPro.apk
